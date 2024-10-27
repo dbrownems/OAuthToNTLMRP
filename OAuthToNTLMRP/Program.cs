@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using Yarp.ReverseProxy.Configuration;
 using Yarp.ReverseProxy.Transforms;
@@ -40,6 +41,13 @@ builder.Services.AddReverseProxy()
 
                 transformContext.ProxyRequest.Headers.Remove("Authorization");
             }
+            else
+            {
+                transformContext.HttpContext.Response.StatusCode = 401;
+                transformContext.ProxyRequest.Dispose();
+                return;
+
+            }
             
         });
     });
@@ -70,6 +78,11 @@ app.Run();
 static bool ValidateAuthHeader(string authHeader)
 {
     return authHeader.EndsWith("bar");
+
+    var tokenHandler = new JwtSecurityTokenHandler();
+    tokenHandler.ValidateToken
+
+
 }
 
 static IReadOnlyList<RouteConfig> GetRoutes()
